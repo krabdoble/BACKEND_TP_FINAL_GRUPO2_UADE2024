@@ -1,4 +1,7 @@
+const path = require("path")
 const connection= require ("../connectDB/dBconnection")
+const fs= require('fs')
+
 
 function getAllProductos(req,res){
     const query = "SELECT * from producto"
@@ -14,10 +17,11 @@ function getAllProductos(req,res){
 }
 
 function createProducto(req,res) {
-    const {nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto} = req.body
-    const query = "INSERT INTO producto (nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto) VALUES (?,?,?,?,?,?,?)"
+    const {id, nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra} = req.body
+    const fotoProducto = req.file ? `../uploads/${req.file.filename}` : null;  
+    const query = "INSERT INTO producto (id, nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto) VALUES (?,?,?,?,?,?,?,?)"
 
-    connection.query(query, [nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto], (err,result)=>{
+    connection.query(query, [id, nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto], (err,result)=>{
         if (err) {
             console.error(err)
             res.status(500).send("Error, couldn't insert products")
@@ -28,18 +32,21 @@ function createProducto(req,res) {
 }
 
 function updateProducto(req,res) {
-    const productoId = req.params.id
-    const {nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto} = req.body
-    const query = "UPDATE producto SET nombre=?, nombreComercial=?, seleccion=?, precioVenta=?, proveedor=?, precioCompra=?, fotoProducto=? WHERE id=?"
+    const id=req.params.id;
+    const {nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra} = req.body
+    const fotoProducto = req.file ? `../uploads/${req.file.filename}` : null;  
 
-    connection.query(query, [nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra,fotoProducto, productoId], (err, result) => {
-        if(err) {
+    const values= [nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra, id];
+    
+    const query = "UPDATE producto SET nombre=?, nombreComercial=?,seleccion=?,precioVenta=?,proveedor=?,precioCompra=?, fotoProducto=? WHERE id=?";
+    connection.query(query, [nombre, nombreComercial,seleccion,precioVenta,proveedor,precioCompra, fotoProducto, id], (err,result)=>{
+        if (err) {
             console.error(err)
-            res.status(500).send("Error, couldn't update products")
+            res.status(500).send("Error, couldn't insert products")
         } else{
             res.json(result)
         }
-    })
+      });
 }
 
 function getProductoById(req,res) {

@@ -14,10 +14,10 @@ function getAllClientes(req,res){
 }
 
 function createCliente(req,res) {
-    const {nombre, cuit} = req.body
-    const query = "INSERT INTO cliente (nombre, cuit) VALUES (?,?)"
+    const {id, nombre, cuit} = req.body
+    const query = "INSERT INTO cliente (id, nombre, cuit) VALUES (?,?,?)"
 
-    connection.query(query, [nombre, cuit], (err,result)=>{
+    connection.query(query, [id, nombre, cuit], (err,result)=>{
         if (err) {
             console.error(err)
             res.status(500).send("Error, couldn't insert notes")
@@ -28,14 +28,14 @@ function createCliente(req,res) {
 }
 
 function updateCliente(req,res) {
-    const clienteId = req.params.id
-    const {nombre, cuit} = req.body
-    const query = "UPDATE cliente SET title=?, content=? WHERE id=?"
+    const {id}= req.params;
+    const {nombre, cuit} = req.body;
+    const query = "UPDATE cliente SET nombre=?, cuit=? WHERE id=?";
 
-    connection.query(query, [nombre, cuit, clienteId], (err, result) => {
-        if(err) {
+    connection.query(query, [ nombre, cuit, id], (err,result)=>{
+        if (err) {
             console.error(err)
-            res.status(500).send("Error, couldn't update notes")
+            res.status(500).send("Error, couldn't insert notes")
         } else{
             res.json(result)
         }
